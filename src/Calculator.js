@@ -1,4 +1,4 @@
-import { useState, memo, useEffect, useCallback } from "react";
+import { useState, memo, useEffect } from "react";
 import clickSound from "./ClickSound.m4a";
 
 function Calculator({ workouts, allowSound }) {
@@ -10,23 +10,37 @@ function Calculator({ workouts, allowSound }) {
 
   // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
 
-  const playSound = useCallback(
-    function () {
-      if (!allowSound) return; //since allowSound is a reactive value it must be included inside the dependency array
-      const sound = new Audio(clickSound);
-      sound.play();
-    },
-    [allowSound]
-  );
+  // const playSound = useCallback(
+  //   function () {
+  //     if (!allowSound) return; //since allowSound is a reactive value it must be included inside the dependency array
+  //     const sound = new Audio(clickSound);
+  //     sound.play();
+  //   },
+  //   [allowSound]
+  // );
   //playsound function gets recreated everytime the dependecy (allowsound) changes.
-  //so when you toggle the speaker icon the playsound function is recreated and the sound is played that's one problem
-  //also another problem is that when you increase/decrease the duration and when you toggle the speaker icon the duration gets back to what it was before inc/decrease. try yourself.
+  //problem is that when you increase/decrease the duration and when you toggle the speaker icon the duration gets back to what it was before inc/decrease. try yourself.
+
+  //the solution is to isolate the playsound function from the state(duration). we only want to play the sound when the duration changes.
   useEffect(
     function () {
       setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
+    },
+    [number, sets, speed, durationBreak]
+  );
+
+  useEffect(
+    function () {
+      const playSound = function () {
+        if (!allowSound) return;
+        const sound = new Audio(clickSound);
+        sound.play();
+      };
       playSound();
     },
-    [number, sets, speed, durationBreak, playSound]
+    [duration, allowSound]
+    //only playing the sound when duration changes not other way around.
+    //also putting the playsound function inside the callback so that we can erase the useCallback.
   );
 
   function handleInc() {
