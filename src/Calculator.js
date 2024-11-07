@@ -1,4 +1,4 @@
-import { useState, memo, useEffect, useCallback, useMemo } from "react";
+import { useState, memo, useEffect, useCallback } from "react";
 import clickSound from "./ClickSound.m4a";
 
 function Calculator({ workouts, allowSound }) {
@@ -18,7 +18,9 @@ function Calculator({ workouts, allowSound }) {
     },
     [allowSound]
   );
-
+  //playsound function gets recreated everytime the dependecy (allowsound) changes.
+  //so when you toggle the speaker icon the playsound function is recreated and the sound is played that's one problem
+  //also another problem is that when you increase/decrease the duration and when you toggle the speaker icon the duration gets back to what it was before inc/decrease. try yourself.
   useEffect(
     function () {
       setDuration((number * sets * speed) / 60 + (sets - 1) * durationBreak);
