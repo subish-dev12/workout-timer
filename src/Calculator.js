@@ -1,4 +1,4 @@
-import { useState, memo, useEffect, useCallback } from "react";
+import { useState, memo, useEffect, useCallback, useMemo } from "react";
 import clickSound from "./ClickSound.m4a";
 
 function Calculator({ workouts, allowSound }) {
@@ -10,19 +10,14 @@ function Calculator({ workouts, allowSound }) {
 
   // const duration = (number * sets * speed) / 60 + (sets - 1) * durationBreak;
 
-  //when we increase or decrease the duration the state changes and the component re-renders
-  //playSound function is recreated when the component re-renders so the effect will also run since it has the playsound dependency[objs and functions are taken as differeent in every render]
-  // but since there is no change in any other dependency (number, sets, speed, durationBreak) other then playsound
-  // setDuration inside the effect  tries to change the state but since there is no new value of all those 4 dependencies it goes to old value again...
-  //means adding or reducing is not working
-
-  //solution:-- if the playsound function has not beeen created again then the effect would not have been trigerred
-  //for that lets memoize the playsound function
-  const playSound = function () {
-    if (!allowSound) return; //since allowSound is a reactive value it must be included inside the dependency array
-    const sound = new Audio(clickSound);
-    sound.play();
-  };
+  const playSound = useCallback(
+    function () {
+      if (!allowSound) return; //since allowSound is a reactive value it must be included inside the dependency array
+      const sound = new Audio(clickSound);
+      sound.play();
+    },
+    [allowSound]
+  );
 
   useEffect(
     function () {
