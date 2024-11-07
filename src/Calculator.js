@@ -45,12 +45,10 @@ function Calculator({ workouts, allowSound }) {
 
   function handleInc() {
     setDuration((duration) => Math.floor(duration) + 1); //rounding down
-    playSound();
   }
 
   function handleDec() {
     setDuration((duration) => (duration > 1 ? Math.ceil(duration) - 1 : 0)); //rounding up
-    playSound();
   }
   const mins = Math.floor(duration);
   const seconds = (duration - mins) * 60;
